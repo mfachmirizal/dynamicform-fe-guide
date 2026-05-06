@@ -1,536 +1,229 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FE Implementation Guide - Dynamic Form & Dashboard</title>
-    
-    <!-- Fonts & Styles -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Code Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
-    
+    <title>Panduan Implementasi Mobile - Alur Tree Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --accent: #f59e0b;
+            --code-bg: #1e1e1e;
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: var(--text-main);
+            color: var(--text);
             line-height: 1.6;
             margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
-
-        header p {
-            margin-top: 10px;
-            opacity: 0.8;
-            font-size: 1.1rem;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
             padding: 20px;
         }
 
-        /* Tabs */
-        .tabs-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .step {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 16px;
             margin-bottom: 30px;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary);
         }
 
-        .tab-btn {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .tab-btn.active {
+        .step-number {
             background: var(--primary);
             color: white;
-            border-color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
         }
 
-        /* Content Area */
-        .content-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
-            display: none;
-            animation: fadeIn 0.3s ease;
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 20px;
         }
 
-        .content-card.active {
-            display: block;
+        p {
+            color: var(--text-light);
+            font-size: 15px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Markdown Styling */
-        .markdown-body h1 { display: none; } /* Hide the h1 from markdown since we have header */
-        .markdown-body h2 {
-            border-bottom: 2px solid var(--bg);
-            padding-bottom: 8px;
-            margin-top: 40px;
-            color: #0f172a;
-        }
-        .markdown-body h3 {
-            margin-top: 25px;
-            color: #334155;
-        }
-        .markdown-body code {
+        .endpoint {
+            background: #eff6ff;
+            padding: 10px 15px;
+            border-radius: 8px;
             font-family: 'Fira Code', monospace;
-            background: #0f0f0f;
-            color: #e2e8f0;
-            padding: 2px 6px;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .method {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.9em;
-            font-weight: 500;
+            margin-right: 10px;
+            font-size: 12px;
         }
-        .markdown-body pre {
+
+        pre {
+            background: var(--code-bg);
+            color: #dcdcdc;
+            padding: 20px;
             border-radius: 12px;
-            padding: 20px !important;
-            margin: 20px 0;
             overflow-x: auto;
-        }
-        .markdown-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .markdown-body th, .markdown-body td {
-            border: 1px solid var(--border);
-            padding: 12px;
-            text-align: left;
-        }
-        .markdown-body th {
-            background: #f8fafc;
-        }
-        .markdown-body blockquote {
-            border-left: 4px solid var(--primary);
-            margin: 0;
-            padding-left: 20px;
-            color: var(--text-muted);
-            font-style: italic;
+            font-size: 13px;
+            font-family: 'Fira Code', monospace;
         }
 
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 600px) {
-            .content-card { padding: 20px; }
-            header h1 { font-size: 1.6rem; }
+        .badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
         }
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <header>
+            <h1>Panduan Implementasi Mobile</h1>
+            <p style="color: #cbd5e1; margin-top: 10px;">Arsitektur "Tree" untuk Pengisian Data Dashboard Dinamis</p>
+        </header>
 
-<header>
-    <h1>FE Implementation Guide</h1>
-    <p>Dynamic Form & Dashboard System Documentation</p>
-</header>
-
-<div class="container">
-    <div class="tabs-container">
-        <button class="tab-btn active" onclick="switchTab('web')">🌐 Web (React JS)</button>
-        <button class="tab-btn" onclick="switchTab('mobile')">📱 Mobile (React Native)</button>
-    </div>
-
-    <div id="web-content" class="content-card active markdown-body">
-        <!-- Content will be injected here -->
-    </div>
-
-    <div id="mobile-content" class="content-card markdown-body">
-        <!-- Content will be injected here -->
-    </div>
-</div>
-
-<footer>
-    &copy; 2026 BPS Dynamic Systems. Dokumen ini dibuat untuk mempermudah developer FE.
-</footer>
-
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
-
-<script id="markdown-web" type="text/markdown">
-# 🚀 Panduan Developer: Implementasi Dynamic Form & Dashboard (React JS)
-
-Selamat datang! Dokumen ini dirancang khusus untuk kamu, frontend developer, agar bisa mengintegrasikan sistem Dynamic Form & Dashboard ini ke dalam aplikasi React (Vite) kamu dengan mudah.
-
-Sistem ini menggunakan pendekatan **"Backend-Driven"**, artinya logika utama (tipe field, kalkulasi chart, dll) diatur di Backend. Frontend kamu hanya perlu "bertanya" ke Backend dan merender hasilnya.
-
----
-
-## 🏗️ Tahap 1: Pengelolaan Form (Form Management)
-
-Tujuannya adalah membuat sebuah halaman di mana user bisa membuat form mereka sendiri.
-
-### Langkah 1: Mengambil Spesifikasi Field dari Backend
-Jangan membatasi tipe field (seperti `text`, `dropdown`) di dalam kode React kamu. Tanyakan ke Backend tipe apa saja yang tersedia.
-
-**API:** `GET /api/forms/schema/create-spec`
-
-**Contoh Implementasi:**
-```javascript
-// Ambil spec saat halaman load
-const [fieldTypes, setFieldTypes] = useState([]);
-
-useEffect(() => {
-  fetch("http://localhost:4000/api/forms/schema/create-spec")
-    .then(res => res.json())
-    .then(json => setFieldTypes(json.data.fieldTypes));
-}, []);
-
-// Gunakan fieldTypes untuk membuat dropdown "Pilih Tipe Field"
-return (
-  <select onChange={(e) => setType(e.target.value)}>
-    {fieldTypes.map(t => (
-      <option key={t.value} value={t.value}>{t.label}</option>
-    ))}
-  </select>
-)
-```
-
-### Langkah 2: Konfigurasi Dinamis (Extra Config)
-Beberapa tipe field (seperti **Dropdown from API**) butuh input tambahan (URL API, Mapping Label). Backend akan memberitahu kamu jika sebuah field butuh input ekstra melalui properti `extraConfigFields`.
-
-**Logika Frontend:**
-```javascript
-const currentType = fieldTypes.find(t => t.value === selectedType);
-
-return (
-  <>
-    {/* Jika tipe ini butuh input ekstra, render secara otomatis */}
-    {currentType?.extraConfigFields?.map(cfg => (
-      <div key={cfg.key}>
-        <label>{cfg.label}</label>
-        <input 
-          placeholder={cfg.placeholder} 
-          onChange={(e) => updateField(cfg.key, e.target.value)} 
-        />
-      </div>
-    ))}
-  </>
-)
-```
-
----
-
-## 📝 Tahap 2: Mengisi Data (Form Filling)
-
-Setelah form dibuat, user lain akan mengisinya.
-
-### Langkah 1: Merender Form secara Dinamis
-Kamu akan menerima objek `formSchema.fields`. Iterasi (looping) array tersebut dan tampilkan input yang sesuai.
-
-**API:** `GET /api/forms/:id?ownerId=...`
-
-**Contoh Pemetaan (Mapping):**
-```javascript
-{fields.map(field => {
-  if (field.type === "string") return <input type="text" ... />
-  if (field.type === "number") return <input type="number" ... />
-  if (field.type === "dropdown_api") return <MyApiDropdown url={field.apiUrl} ... />
-  // ... dan seterusnya
-})}
-```
-
-### Langkah 2: Mengirim Data (Submission)
-Kirim data dalam format JSON. Pastikan kamu mengirim `ownerId` agar data tidak tercampur dengan desa/user lain.
-
-**API:** `POST /api/data`
-**Payload:**
-```json
-{
-  "ownerId": "desa-sukamaju",
-  "formId": "ID_FORM_KAMU",
-  "values": {
-    "field_uuid_1": "Nilai Input",
-    "field_uuid_2": 150
-  },
-  "submittedAt": "2023-10-27"
-}
-```
-
----
-
-## 📊 Tahap 3: Dashboard & Visualisasi
-
-Ini adalah bagian paling keren. Kamu bisa menampilkan grafik tanpa perlu pusing menghitung rata-rata atau total di Frontend.
-
-### Langkah 1: Mengambil Tipe Visualisasi
-Tipe grafik yang tersedia diatur oleh Backend.
-
-**API:** `GET /api/dashboards/viz-types`
-
-### Langkah 2: Live Preview (Logic in BE)
-Saat user mengatur grafik di Dashboard Builder, gunakan API Preview agar user bisa melihat hasil grafik secara instan menggunakan data asli.
-
-**API:** `GET /api/dashboards/viz-preview`
-**Parameter:** `ownerId`, `formId`, `type`, `xAxis`, `yAxis`, `aggregation`.
-
-**Keuntungan:** Kamu tidak perlu menulis rumus Matematika di React. Cukup kirim parameter, Backend akan membalas dengan data yang sudah siap di-render oleh library grafik (seperti Recharts atau Chart.js).
-
-### Langkah 3: Alur Release (Draft vs Published)
-Sistem ini mendukung fitur **Draft**.
-1. Simpan perubahan ke draft: `POST /api/dashboards`
-2. Setelah oke, release ke publik: `PUT /api/dashboards/:id/release`
-
----
-
-## 💡 Tips untuk Pemula
-
-1.  **Gunakan ID yang Konsisten**: Backend memberikan `id` (UUID) untuk setiap field. Gunakan ID ini sebagai *key* di state `values` kamu, jangan gunakan Label (karena label bisa berubah).
-2.  **Mapping API Dropdown**: Untuk `dropdown_api`, pastikan kamu menggunakan properti `apiLabelField` dan `apiValueField` yang dikonfigurasi user untuk memetakan response JSON dari API eksternal.
-3.  **OwnerId adalah Kunci**: Selalu sertakan `ownerId` di setiap request. Ini adalah identitas unik untuk setiap "Tenant" atau "Desa".
-
----
-
-## 🛠️ API Reference Singkat
-
-| Fitur | Method | Endpoint | Kegunaan |
-| :--- | :--- | :--- | :--- |
-| **Spec Field** | `GET` | `/api/forms/schema/create-spec` | List tipe field & config-nya |
-| **List Form** | `GET` | `/api/forms?ownerId=...` | Mengambil semua form milik user |
-| **Simpan Data** | `POST` | `/api/data` | Submit isi form |
-| **Spec Grafik** | `GET` | `/api/dashboards/viz-types` | List tipe grafik (Bar, Pie, dll) |
-| **Preview Grafik** | `GET` | `/api/dashboards/viz-preview` | Hitung data grafik secara instan |
-
----
-
-**Selamat Membangun!** 🚀
-Jika ada kendala, cek folder `REKAP/PROJECT_STATE.md` untuk melihat status teknis terbaru.
-</script>
-
-<script id="markdown-mobile" type="text/markdown">
-# 📱 Panduan Developer: Implementasi Dynamic Form & Dashboard (React Native)
-
-Selamat datang, Mobile Developer! Dokumen ini membantu kamu membangun aplikasi mobile (Android/iOS) yang bisa menampilkan form dan grafik secara dinamis menggunakan backend kami.
-
-Pendekatan **Backend-Driven** sangat menguntungkan di mobile: Kamu bisa menambahkan tipe form atau grafik baru dari backend tanpa perlu melakukan update aplikasi di PlayStore/AppStore!
-
----
-
-## 🏗️ Tahap 1: Membangun Form Renderer Dinamis
-
-Di mobile, tugas utama kamu biasanya adalah **mengisi data**.
-
-### Langkah 1: Mengambil Struktur Form
-Gunakan API untuk mengambil daftar field yang harus ditampilkan.
-
-**API:** `GET /api/forms/:id?ownerId=...`
-
-### Langkah 2: Merender Input dengan React Native
-Kamu tidak bisa menggunakan `<input>` seperti di web. Gunakan komponen dari `react-native`.
-
-**Contoh Mapping Dasar:**
-```javascript
-import { View, Text, TextInput, Switch } from 'react-native';
-
-const renderField = (field, value, onChange) => {
-  switch (field.type) {
-    case 'string':
-    case 'number':
-      return (
-        <View key={field.id} style={styles.container}>
-          <Text>{field.label}</Text>
-          <TextInput
-            keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-            value={value}
-            onChangeText={onChange}
-            style={styles.input}
-          />
-        </View>
-      );
-    case 'checkbox':
-      return (
-        <View key={field.id} style={styles.row}>
-          <Text>{field.label}</Text>
-          <Switch value={value} onValueChange={onChange} />
-        </View>
-      );
-    // Tambahkan case lain: date (DatePicker), image (ImagePicker), dll.
+        <!-- STEP 1 -->
+        <div class="step">
+            <div class="step-number">Langkah 1</div>
+            <h2>Inisialisasi Filter Tanggal (Draft Awal)</h2>
+            <p>Ambil batas awal bulan untuk mengisi list pilihan bulan (month picker) di aplikasi mobile.</p>
+            <div class="endpoint"><span class="method">GET</span> /api/dashboards/:ownerId/draft-start</div>
+            <p><strong>Request:</strong></p>
+            <pre>curl -X GET https://api.desapedia.id/api/dashboards/desa1/draft-start</pre>
+            <p><strong>Sample Response:</strong></p>
+            <pre>{
+  "success": true,
+  "data": {
+    "draftStartMonth": "2025-01"
   }
-};
-```
+}</pre>
+            <p><small>*Mobile harus meng-generate list bulan mulai dari Jan 2025 s/d Bulan Saat Ini.</small></p>
+        </div>
 
----
-
-## 📝 Tahap 2: Mengirim Data (Submission)
-
-Kirim data dalam format JSON murni. Pastikan kamu mengirim `ownerId` (misalnya ID Desa yang sedang aktif).
-
-**API:** `POST /api/data`
-**Payload:**
-```json
-{
-  "ownerId": "desa-sukamaju",
-  "formId": "ID_FORM_DARI_API",
-  "values": {
-    "field_uuid_1": "Isian Text",
-    "field_uuid_2": 250
-  },
-  "filledBy": {
-    "userId": "user-mobile-123",
-    "name": "Petugas Lapangan"
+        <!-- STEP 2 -->
+        <div class="step">
+            <div class="step-number">Langkah 2</div>
+            <h2>Pilih Kategori (List Panels)</h2>
+            <p>Setelah user memilih bulan, tampilkan daftar Panel (Kategori) yang ada di dashboard desa tersebut.</p>
+            <div class="endpoint"><span class="method">GET</span> /api/dashboards/:ownerId/panels</div>
+            <p><strong>Sample Response:</strong></p>
+            <pre>{
+  "success": true,
+  "data": {
+    "dashboardName": "Dashboard Desa Maju",
+    "panels": [
+      { "id": "panel-pop", "title": "Kependudukan", "componentCount": 3 },
+      { "id": "panel-health", "title": "Kesehatan", "componentCount": 2 }
+    ]
   }
-}
-```
+}</pre>
+        </div>
 
----
-
-## 📊 Tahap 3: Menampilkan Grafik (Dashboard)
-
-Untuk menampilkan grafik di React Native, kami merekomendasikan library seperti **react-native-chart-kit** atau **Victory Native**.
-
-### Langkah 1: Mengambil Data Grafik (Preview)
-Kamu tidak perlu menghitung data sendiri. Panggil API Preview untuk mendapatkan data yang sudah "siap saji".
-
-**API:** `GET /api/dashboards/viz-preview`
-
-### Langkah 2: Merender Grafik
-Backend akan memberikan data agregat. Kamu tinggal memasukannya ke dalam format yang diminta library grafik kamu.
-
-**Contoh dengan `react-native-chart-kit`:**
-```javascript
-// Data dari Backend (viz-preview)
-const chartData = {
-  labels: ["Jan", "Feb", "Mar"],
-  datasets: [{ data: [20, 45, 28] }]
-};
-
-return (
-  <BarChart
-    data={chartData}
-    width={screenWidth}
-    height={220}
-    chartConfig={chartConfig}
-    verticalLabelRotation={30}
-  />
-);
-```
-
----
-
-## ⚙️ Tahap 4: Konfigurasi API Dropdown (Penting!)
-
-Jika field bertipe `dropdown_api`, kamu harus melakukan fetch manual ke URL yang diberikan di properti `apiUrl`.
-
-**Logika Mapping Mobile:**
-```javascript
-const [options, setOptions] = useState([]);
-
-useEffect(() => {
-  if (field.type === 'dropdown_api') {
-    fetch(field.apiUrl)
-      .then(res => res.json())
-      .then(data => {
-        // Gunakan mapping dinamis dari backend!
-        const labelKey = field.apiLabelField || 'label';
-        const valueKey = field.apiValueField || 'value';
-        
-        const mapped = data.map(item => ({
-          label: item[labelKey],
-          value: item[valueKey]
-        }));
-        setOptions(mapped);
-      });
-  }
-}, [field]);
-```
-
----
-
-## 💡 Tips untuk Mobile Developer
-
-1.  **Offline Support**: Pertimbangkan untuk menyimpan draf isian di `AsyncStorage` jika petugas lapangan berada di area susah sinyal.
-2.  **Validation**: Gunakan `validationRules` dari backend (min, max, pattern) untuk memvalidasi input sebelum dikirim.
-3.  **OwnerId Persistence**: Simpan `ownerId` di global state (Redux/Zustand/Context) karena hampir semua API membutuhkannya.
-</script>
-
-<script>
-    function switchTab(tab) {
-        // Buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-
-        // Content
-        document.querySelectorAll('.content-card').forEach(card => card.classList.remove('active'));
-        document.getElementById(`${tab}-content`).classList.add('active');
-        
-        // Render Markdown if not already rendered
-        const container = document.getElementById(`${tab}-content`);
-        if (container.innerHTML.trim().startsWith('<!--')) {
-            const mdSource = document.getElementById(`markdown-${tab}`).innerHTML;
-            container.innerHTML = marked.parse(mdSource);
-            Prism.highlightAllUnder(container);
+        <!-- STEP 3 -->
+        <div class="step">
+            <div class="step-number">Langkah 3</div>
+            <h2>Pilih Isian (List Components & Schema)</h2>
+            <p>Setelah panel dipilih, tampilkan daftar komponen di dalamnya. Endpoint ini mengembalikan
+                <strong>formSchema</strong> yang digunakan untuk merender UI inputan secara dinamis.</p>
+            <p><span class="badge">PENTING</span> Gunakan <strong>fieldKey</strong> sebagai kunci utama saat menyimpan data ke <code>values</code>.</p>
+            <div class="endpoint"><span class="method">GET</span> /api/dashboards/:ownerId/panels/:panelId/components
+            </div>
+            <p><strong>Sample Response:</strong></p>
+            <pre>{
+  "success": true,
+  "data": {
+    "panelTitle": "Kependudukan",
+    "components": [
+      {
+        "id": "comp-1",
+        "title": "Data Gender",
+        "formId": {
+          "_id": "form-123",
+          "formSchema": {
+            "fields": [
+              { "fieldKey": "jml_pria", "label": "Jumlah Pria", "type": "number" },
+              { "fieldKey": "jml_wanita", "label": "Jumlah Wanita", "type": "number" }
+            ]
+          }
         }
-    }
+      }
+    ]
+  }
+}</pre>
+        </div>
 
-    // Initial render
-    window.onload = () => {
-        switchTab('web');
-    };
-</script>
+        <!-- STEP 4 -->
+        <div class="step" style="border-left-color: var(--accent);">
+            <div class="step-number" style="background: var(--accent);">Langkah 4</div>
+            <h2>Manajemen Data (CRUD)</h2>
+            <p>Gunakan ID Form dari Langkah 3 untuk mengelola data. Pastikan menyertakan filter tanggal agar data tidak
+                bercampur antar bulan.</p>
 
+            <p><span class="badge">BACA DATA</span></p>
+            <div class="endpoint"><span class="method">GET</span> /api/data/:formId?startDate=...&endDate=...</div>
+
+            <p><span class="badge">SIMPAN DATA</span></p>
+            <div class="endpoint"><span class="method">POST</span> /api/data</div>
+            <pre>{
+  "ownerId": "desa1",
+  "formId": "form-123",
+  "values": { 
+    "jml_pria": 100, 
+    "jml_wanita": 105 
+  },
+  "submittedAt": "2026-03-01T00:00:00Z"
+}</pre>
+        </div>
+
+        <footer style="text-align: center; color: var(--text-light); font-size: 13px; margin-top: 50px;">
+            &copy; 2026 DynamicForm System - Documentation for Mobile Team
+        </footer>
+    </div>
 </body>
+
 </html>
